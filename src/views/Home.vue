@@ -10,8 +10,6 @@
         <el-menu mode="horizontal" :ellipsis="false" class="nav-menu" default-active="1">
           <el-menu-item index="1">游戏大厅</el-menu-item>
           <el-menu-item index="/forum" @click="router.push('/forum')">💬 交流论坛</el-menu-item>
-          <el-menu-item index="3" v-if="userInfo?.role === 1 || userInfo?.role === 2">开发者中心</el-menu-item>
-          <el-menu-item index="4" v-if="userInfo?.role === 2">后台管理</el-menu-item>
         </el-menu>
 
         <div class="user-profile" v-if="userInfo">
