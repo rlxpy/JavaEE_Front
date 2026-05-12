@@ -29,3 +29,8 @@ export const getUsersByPageAPI = (params) => {
     // 相当于 http://localhost:8080/user/page?page=1&size=10&keyword=xxx
     return request.get('/user/page', { params: params })
 }
+
+// 获取图形验证码
+export const getCaptchaAPI = () => {
+    return request.get('/api/captcha')
+}
