@@ -93,14 +93,19 @@ const handleLogin = async () => {
   }
   try {
     const res = await loginAPI(loginForm)
-    if (res.data.code === 200) {
+    if (res.code == 200) {
       ElMessage.success('登录成功！')
-      localStorage.setItem('user', JSON.stringify(res.data.data))
+      // 1. ⭐️ 核心操作：把后端发来的护照（Token）存进钱包（localStorage）
+      // 我们之前的全局请求拦截器，每次发请求都会从这里拿 token！
+      localStorage.setItem('token', res.token)
+      // 2. 保存脱敏后的用户基本信息（用于页面展示头像、昵称等）
+      localStorage.setItem('user', JSON.stringify(res.data))
       router.push('/home')
     } else {
-      ElMessage.error(res.data.msg || '登录失败')
+      ElMessage.error(res.msg || '登录失败')
     }
   } catch (error) {
+    console.error('真正的报错原因：', error)
     ElMessage.error('网络请求失败')
   }
 }
@@ -128,7 +133,7 @@ const handleRegister = async () => {
 
     // 3. 调用注册接口
     const res = await registerAPI(postData)
-    if (res.data.code === 200) {
+    if (res.code == 200) {
       ElMessage.success('注册成功！快去登录吧。')
       // 注册成功后，自动帮你切换到登录面板，并且把账号填好
       activeTab.value = 'login'
@@ -141,7 +146,7 @@ const handleRegister = async () => {
       registerForm.password = ''
       registerForm.confirmPassword = ''
     } else {
-      ElMessage.error(res.data.msg || '注册失败，账号可能已被占用')
+      ElMessage.error(res.msg || '注册失败，账号可能已被占用')
     }
   } catch (error) {
     ElMessage.error('网络请求失败')

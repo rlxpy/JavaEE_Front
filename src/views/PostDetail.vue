@@ -111,8 +111,8 @@ const isLiked = ref(false)
 const fetchPostDetail = async (postId) => {
   try {
     const res = await getPostDetailAPI(postId)
-    if (res.data.code === 200) {
-      post.value = res.data.data
+    if (res.code === 200) {
+      post.value = res.data
     }
   } catch (error) {
     ElMessage.error('获取帖子失败')
@@ -127,8 +127,8 @@ onMounted(async () => {
 
   if (user.value && user.value.id) {
     const res = await checkPostLikeAPI(user.value.id, postId)
-    if (res.data.code === 200) {
-      isLiked.value = res.data.data
+    if (res.codee === 200) {
+      isLiked.value = res.data
     }
   }
 })
@@ -138,11 +138,11 @@ const handleToggleLike = async () => {
   if (!user.value) return
   try {
     const res = await togglePostLikeAPI(user.value.id, route.params.id)
-    if (res.data.code === 200) {
-      ElMessage.success(res.data.msg)
-      isLiked.value = res.data.data
+    if (res.code === 200) {
+      ElMessage.success(res.msg)
+      isLiked.value = res.data
       // 同步更新页面上的点赞数，无需刷新
-      post.value.likeCount += (res.data.data ? 1 : -1)
+      post.value.likeCount += (res.data ? 1 : -1)
     }
   } catch (error) {
     ElMessage.error('网络错误')
@@ -152,8 +152,8 @@ const handleToggleLike = async () => {
 // 拉取所有回复
 const fetchComments = async (postId) => {
   const res = await getCommentsByPostAPI(postId)
-  if (res.data.code === 200) {
-    comments.value = res.data.data
+  if (res.code === 200) {
+    comments.value = res.data
   }
 }
 
@@ -173,13 +173,13 @@ const submitReply = async () => {
 
   try {
     const res = await addCommentAPI(postData)
-    if (res.data.code === 200) {
+    if (res.code === 200) {
       ElMessage.success('回复成功！')
       replyContent.value = '' // 清空输入框
       await fetchComments(route.params.id) // 刷新列表，看到自己的回复
     } else {
       // ⭐️ 补上遗漏的 else 分支，把后端的报错大声说出来！
-      ElMessage.error(res.data.msg || '回复失败')
+      ElMessage.error(res.msg || '回复失败')
     }
   } catch (err) {
     ElMessage.error('网络或服务器异常')

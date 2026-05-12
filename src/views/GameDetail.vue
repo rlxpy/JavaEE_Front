@@ -139,10 +139,10 @@ const newComment = reactive({
 const fetchGameDetail = async (id) => {
   try {
     const res = await getGameDetailAPI(id)
-    if (res.data.code === 200) {
-      gameInfo.value = res.data.data
+    if (res.code === 200) {
+      gameInfo.value = res.data
     } else {
-      ElMessage.error(res.data.msg || '获取详情失败')
+      ElMessage.error(res.msg || '获取详情失败')
       router.push('/home') // 查不到就踢回大厅
     }
   } catch (error) {
@@ -157,8 +157,8 @@ const goBack = () => {
 
 const fetchComments = async (gameId) => {
   const res = await getCommentsByGameAPI(gameId)
-  if (res.data.code === 200) {
-    comments.value = res.data.data
+  if (res.code === 200) {
+    comments.value = res.data
   }
 }
 
@@ -182,7 +182,7 @@ const submitComment = async () => {
   // 3. 调用接口
   try {
     const res = await addCommentAPI(postData)
-    if (res.data.code === 200) {
+    if (res.code === 200) {
       ElMessage.success('评论发表成功！')
       newComment.content = '' // 清空输入框
       await fetchComments(route.params.id) // 刷新列表，看到自己的新评论
@@ -210,9 +210,9 @@ onMounted(async () => {
 const checkFavoriteStatus = async (userId, gameId) => {
   try {
     const res = await checkFavoriteAPI(userId, gameId)
-    if (res.data.code === 200) {
+    if (res.code === 200) {
       // 如果后端查到了记录返回 true，这里就会把按钮变成红色！
-      isFavorite.value = res.data.data
+      isFavorite.value = res.data
     }
   } catch (error) {
     console.error("查询收藏状态失败", error)
@@ -224,10 +224,10 @@ const handleToggleFavorite = async () => {
   if (!user.value) return
   try {
     const res = await toggleFavoriteAPI(user.value.id, route.params.id)
-    if (res.data.code === 200) {
-      ElMessage.success(res.data.msg)
+    if (res.code === 200) {
+      ElMessage.success(res.msg)
       // 核心：把后端返回的最新状态（true 或 false）赋给 isFavorite
-      isFavorite.value = res.data.data
+      isFavorite.value = res.data
     }
   } catch (error) {
     ElMessage.error('网络错误，操作失败')

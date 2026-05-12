@@ -47,8 +47,8 @@ onMounted(() => {
 const fetchFavoriteGames = async (userId) => {
   try {
     const res = await getFavoriteListAPI(userId)
-    if (res.data.code === 200) {
-      favoriteList.value = res.data.data
+    if (res.code === 200) {
+      favoriteList.value = res.data
     }
   } catch (err) {
     console.error("获取收藏列表失败")

@@ -111,12 +111,12 @@ const submitGame = async () => {
 
   try {
     const res = await addGameAPI(gameForm)
-    if (res.data.code === 200) {
+    if (res.code === 200) {
       ElMessage.success('游戏发布成功！')
       // 发布成功后，带着成就感直接跳回游戏大厅看自己的作品！
       router.push('/home')
     } else {
-      ElMessage.error(res.data.msg || '发布失败')
+      ElMessage.error(res.msg || '发布失败')
     }
   } catch (error) {
     ElMessage.error('网络错误，请稍后再试')

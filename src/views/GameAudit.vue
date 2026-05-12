@@ -60,8 +60,8 @@ const fetchPendingGames = async () => {
   loading.value = true
   try {
     const res = await getAuditGameListAPI(0)
-    if (res.data.code === 200) {
-      gameList.value = res.data.data
+    if (res.code === 200) {
+      gameList.value = res.data
     }
   } catch (error) {
     ElMessage.error('获取待审核列表失败')
@@ -85,8 +85,8 @@ const handleAudit = (gameId, newStatus) => {
   ).then(async () => {
     try {
       const res = await processGameAuditAPI(gameId, newStatus)
-      if (res.data.code === 200) {
-        ElMessage.success(res.data.msg)
+      if (res.code === 200) {
+        ElMessage.success(res.msg)
         fetchPendingGames() // 刷新表格，刚处理完的游戏会瞬间消失！
       } else {
         ElMessage.error('操作失败')

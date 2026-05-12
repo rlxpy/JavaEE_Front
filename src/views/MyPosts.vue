@@ -77,8 +77,8 @@ const fetchMyPosts = async () => {
   try {
     // ⭐️ 把 searchKeyword 传给 API
     const res = await getMyPostsAPI(user.id, searchKeyword.value)
-    if (res.data.code === 200) {
-      postList.value = res.data.data
+    if (res.code === 200) {
+      postList.value = res.data
     }
   } catch (error) {
     ElMessage.error('获取发帖记录失败')
@@ -100,11 +100,11 @@ const handleDelete = (postId) => {
   ).then(async () => {
     try {
       const res = await deleteMyPostAPI(postId, user.id)
-      if (res.data.code === 200) {
+      if (res.code === 200) {
         ElMessage.success('删除成功！')
         fetchMyPosts() // 刷新列表
       } else {
-        ElMessage.error(res.data.msg || '删除失败')
+        ElMessage.error(res.msg || '删除失败')
       }
     } catch (error) {
       ElMessage.error('网络请求异常')

@@ -115,12 +115,12 @@ const fetchGames = async () => {
   try {
     // 调用分页接口，传入页码、每页大小、搜索关键字
     const res = await getGamesByPageAPI(currentPage.value, pageSize.value, searchKeyword.value)
-    if (res.data.code === 200) {
-      // ⚠️ 注意：因为后端套了 PageInfo，所以真实数组在 res.data.data.list 里！
-      gameList.value = res.data.data.list
-      total.value = res.data.data.total // 同步总条数
+    if (res.code === 200) {
+      // ⚠️ 注意：因为后端套了 PageInfo，所以真实数组在 res.data.list 里！
+      gameList.value = res.data.list
+      total.value = res.data.total // 同步总条数
     } else {
-      ElMessage.error(res.data.msg || '获取游戏列表失败')
+      ElMessage.error(res.msg || '获取游戏列表失败')
     }
   } catch (error) {
     ElMessage.error('网络请求异常，无法连接到后端')

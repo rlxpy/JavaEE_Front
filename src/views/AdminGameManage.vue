@@ -91,9 +91,9 @@ const fetchAdminGames = async () => {
   loading.value = true
   try {
     const res = await getAllGamesForAdminAPI(currentPage.value, pageSize.value, searchKeyword.value)
-    if (res.data.code === 200) {
-      gameList.value = res.data.data.list
-      total.value = res.data.data.total
+    if (res.code === 200) {
+      gameList.value = res.data.list
+      total.value = res.data.total
     }
   } catch (error) {
     ElMessage.error('获取全站游戏失败')
@@ -131,11 +131,11 @@ const handleForceDelete = (row) => {
   ).then(async () => {
     try {
       const res = await deleteGameByAdminAPI(row.id)
-      if (res.data.code === 200) {
+      if (res.code === 200) {
         ElMessage.success('已成功对该游戏执行降维打击！')
         fetchAdminGames() // 刷新表格
       } else {
-        ElMessage.error(res.data.msg || '下架失败')
+        ElMessage.error(res.msg || '下架失败')
       }
     } catch (error) {
       ElMessage.error('网络请求异常')

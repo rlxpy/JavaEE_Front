@@ -87,9 +87,9 @@ const fetchComments = async () => {
   loading.value = true
   try {
     const res = await getAllCommentsForAdminAPI(currentPage.value, pageSize.value, searchKeyword.value)
-    if (res.data.code === 200) {
-      commentList.value = res.data.data.list
-      total.value = res.data.data.total
+    if (res.code === 200) {
+      commentList.value = res.data.list
+      total.value = res.data.total
     }
   } catch (error) {
     ElMessage.error('获取评论列表失败')
@@ -125,11 +125,11 @@ const handleForceDelete = (id) => {
   ).then(async () => {
     try {
       const res = await deleteCommentByAdminAPI(id)
-      if (res.data.code === 200) {
+      if (res.code === 200) {
         ElMessage.success('已成功清除违规评论！')
         fetchComments() // 刷新表格
       } else {
-        ElMessage.error(res.data.msg || '删除失败')
+        ElMessage.error(res.msg || '删除失败')
       }
     } catch (error) {
       ElMessage.error('网络请求异常')

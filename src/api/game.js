@@ -1,10 +1,5 @@
-import axios from 'axios'
-
-// 创建一个 axios 实例（指向你的本地 Java 后端）
-const request = axios.create({
-    baseURL: 'http://localhost:8080',
-    timeout: 5000
-})
+//1. 引入我们刚才封装好的“智能对讲机”，而不是直接引原始的 axios
+import request from '@/utils/request'
 
 // 获取游戏列表 (带搜索)
 export const getGameListAPI = (keyword = '') => {

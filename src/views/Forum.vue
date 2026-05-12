@@ -142,9 +142,9 @@ const fetchPosts = async () => {
   try {
     // ⭐️ 加上 searchKeyword.value
     const res = await getPostsByPageAPI(currentPage.value, pageSize.value, searchKeyword.value)
-    if (res.data.code === 200) {
-      postList.value = res.data.data.list
-      total.value = res.data.data.total
+    if (res.code === 200) {
+      postList.value = res.data.list
+      total.value = res.data.total
     }
   } catch (error) {
     ElMessage.error('获取帖子失败，请检查网络')
@@ -157,8 +157,8 @@ const fetchPosts = async () => {
 const fetchGames = async () => {
   try {
     const res = await getGameListAPI() // 假设你的 game.js 里这个方法叫这个
-    if (res.data.code === 200) {
-      gameList.value = res.data.data
+    if (res.code === 200) {
+      gameList.value = res.data
     }
   } catch (error) {
     console.error("拉取游戏列表失败")
@@ -197,7 +197,7 @@ const submitPost = async () => {
   try {
     const res = await addPostAPI(postData)
     // ... 成功后的清空逻辑里，加一句 postForm.gameId = null
-    if (res.data.code === 200) {
+    if (res.code === 200) {
       ElMessage.success('发帖成功！')
       showDialog.value = false
       postForm.title = ''
@@ -206,7 +206,7 @@ const submitPost = async () => {
       currentPage.value = 1
       fetchPosts()
     } else {
-      ElMessage.error(res.data.msg || '发帖失败')
+      ElMessage.error(res.msg || '发帖失败')
     }
   } catch (error) {
     ElMessage.error('网络请求异常')

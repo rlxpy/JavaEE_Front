@@ -103,8 +103,8 @@ const fetchMyGames = async () => {
   loading.value = true
   try {
     const res = await getDeveloperGamesAPI(user.id)
-    if (res.data.code === 200) {
-      gameList.value = res.data.data
+    if (res.code === 200) {
+      gameList.value = res.data
     }
   } catch (error) {
     ElMessage.error('获取游戏列表失败')
@@ -126,11 +126,11 @@ const handleDelete = (gameId) => {
   ).then(async () => {
     try {
       const res = await deleteGameAPI(gameId, user.id)
-      if (res.data.code === 200) {
+      if (res.code === 200) {
         ElMessage.success('删除成功！')
         fetchMyGames() // 刷新列表
       } else {
-        ElMessage.error(res.data.msg || '删除失败')
+        ElMessage.error(res.msg || '删除失败')
       }
     } catch (error) {
       ElMessage.error('网络请求异常')
@@ -156,12 +156,12 @@ const submitUpdate = async () => {
 
   try {
     const res = await updateGameAPI(editForm)
-    if (res.data.code === 200) {
+    if (res.code === 200) {
       ElMessage.success('保存成功！')
       editDialogVisible.value = false
       fetchMyGames() // 刷新列表，看到最新的修改
     } else {
-      ElMessage.error(res.data.msg || '保存失败')
+      ElMessage.error(res.msg || '保存失败')
     }
   } catch (error) {
     ElMessage.error('网络请求异常')

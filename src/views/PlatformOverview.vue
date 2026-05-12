@@ -40,8 +40,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import * as echarts from 'echarts' // ⭐️ 引入 ECharts
+import { ref, onMounted } from 'vue'//按需引入
+import * as echarts from 'echarts' // 引入 ECharts
 import { getDashboardStatsAPI } from '../api/stat.js'
 import { ElMessage } from 'element-plus'
 
@@ -63,17 +63,17 @@ onMounted(async () => {
 const fetchStats = async () => {
   try {
     const res = await getDashboardStatsAPI()
-    if (res.data.code === 200) {
-      stats.value = res.data.data
+    if (res.code === 200) {
+      stats.value = res.data
       // 数据拿到后，立刻渲染图表！
-      renderCharts(res.data.data.roleDist, res.data.data.gameStatusDist)
+      renderCharts(res.data.roleDist, res.data.gameStatusDist)
     }
   } catch (error) {
     ElMessage.error('获取大屏数据失败，请检查网络')
   }
 }
 
-// ⭐️ 渲染 ECharts 图表的核心方法
+// 渲染 ECharts 图表的核心方法
 const renderCharts = (roleData, gameData) => {
   // 1. 渲染用户角色饼图
   const roleChart = echarts.init(roleChartRef.value)

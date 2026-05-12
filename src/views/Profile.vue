@@ -82,11 +82,11 @@ const handleUpdate = async () => {
     // 调用后端接口
     const res = await updateUserInfoAPI(postData)
 
-    if (res.data.code === 200) {
+    if (res.code === 200) {
       ElMessage.success('个人信息保存成功！')
 
       // ⭐️ 核心：用后端返回的最新数据覆盖本地 localStorage
-      const updatedUser = res.data.data
+      const updatedUser = res.data
       localStorage.setItem('user', JSON.stringify(updatedUser))
 
       // 清空密码输入框
@@ -97,7 +97,7 @@ const handleUpdate = async () => {
         window.location.reload()
       }, 1000)
     } else {
-      ElMessage.error(res.data.msg || '保存失败，请稍后再试')
+      ElMessage.error(res.msg || '保存失败，请稍后再试')
     }
   } catch (error) {
     ElMessage.error('网络请求失败')

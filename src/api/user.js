@@ -1,10 +1,5 @@
-import axios from 'axios'
-
-// 1. 创建一个 axios 实例（相当于配置一部对讲机）
-const request = axios.create({
-    baseURL: 'http://localhost:8080', // 你 Java 后端的地址
-    timeout: 5000 // 请求超时时间
-})
+//1. 引入我们刚才封装好的“智能对讲机”，而不是直接引原始的 axios
+import request from '@/utils/request'
 
 // 2. 封装登录接口并导出
 export const loginAPI = (data) => {

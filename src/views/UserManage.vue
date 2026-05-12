@@ -115,13 +115,13 @@ const fetchUsers = async () => {
   try {
     loading.value = true
     const res = await getUsersByPageAPI(queryParams)
-    if (res.data.code === 200) {
-      // ⭐️ 注意这里的拆解：PageInfo 对象在 res.data.data 里
-      const pageInfo = res.data.data
+    if (res.code === 200) {
+      // ⭐️ 注意这里的拆解：PageInfo 对象在 res.data 里
+      const pageInfo = res.data
       userList.value = pageInfo.list  // 取出当前页的数组
       total.value = pageInfo.total    // 取出总条数
     } else {
-      ElMessage.error(res.data.msg || '获取用户失败')
+      ElMessage.error(res.msg || '获取用户失败')
     }
   } catch (error) {
     ElMessage.error('网络错误')
@@ -162,10 +162,10 @@ const handleRoleChange = async (userId, newRole) => {
   try {
     const postData = { id: userId, role: newRole }
     const res = await updateUserInfoAPI(postData)
-    if (res.data.code === 200) {
+    if (res.code === 200) {
       ElMessage.success('用户权限修改成功！')
     } else {
-      ElMessage.error(res.data.msg || '权限修改失败')
+      ElMessage.error(res.msg || '权限修改失败')
     }
   } catch (error) {
     ElMessage.error('网络请求异常')
