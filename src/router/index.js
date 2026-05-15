@@ -15,16 +15,32 @@ const routes = [
         name: 'Login',
         component: Login
     },
+    // ⭐️ 新增：前台骨架路由
     {
-        path: '/home',
-        name: 'Home',
-        component: Home
-    },
-    {
-        // ⭐ 新增：动态路由，:id 代表这是一个可变的参数
-        path: '/game/detail/:id',
-        name: 'GameDetail',
-        component: () => import('../views/GameDetail.vue') // 采用企业级懒加载写法
+        path: '/',
+        component: () => import('../views/layout/MainLayout.vue'),
+        children: [
+            {
+                path: 'home',
+                name: 'Home',
+                component: () => import('../views/Home.vue')
+            },
+            {
+                path: 'forum',
+                name: 'Forum',
+                component: () => import('../views/Forum.vue')
+            },
+            {
+                path: 'forum/detail/:id',
+                name: 'PostDetail',
+                component: () => import('../views/PostDetail.vue')
+            },
+            {
+                path: 'game/detail/:id',
+                name: 'GameDetail',
+                component: () => import('../views/GameDetail.vue')
+            }
+        ]
     },
     // ⭐️ 新增：后台管理的嵌套路由
     {
@@ -93,25 +109,22 @@ const routes = [
                 component: () => import('../views/AdminForumManage.vue')
             },
         ]
-    },    // ⭐️ 新增：玩家交流论坛页面
-    {
-        path: '/forum',
-        name: 'Forum',
-        component: () => import('../views/Forum.vue')
     },
-    // ⭐️ 帖子详情页 (动态路由)
-    {
-        path: '/forum/detail/:id',
-        name: 'PostDetail',
-        component: () => import('../views/PostDetail.vue')
-    },
-
 ]
 
 // 创建路由实例
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes,
+    scrollBehavior(to, from, savedPosition) {
+        // 1. 如果有保存的位置（比如点击浏览器后退按钮），就回到那个位置
+        if (savedPosition) {
+            return savedPosition
+        } else {
+            // 2. 否则，所有跳转都强制滚回顶部
+            return { top: 0 }
+        }
+    }
 })
 
 export default router

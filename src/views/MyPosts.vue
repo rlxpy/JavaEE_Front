@@ -76,7 +76,7 @@ const fetchMyPosts = async () => {
   loading.value = true
   try {
     // ⭐️ 把 searchKeyword 传给 API
-    const res = await getMyPostsAPI(user.id, searchKeyword.value)
+    const res = await getMyPostsAPI(searchKeyword.value)
     if (res.code === 200) {
       postList.value = res.data
     }
@@ -99,7 +99,7 @@ const handleDelete = (postId) => {
       }
   ).then(async () => {
     try {
-      const res = await deleteMyPostAPI(postId, user.id)
+      const res = await deleteMyPostAPI(postId)
       if (res.code === 200) {
         ElMessage.success('删除成功！')
         fetchMyPosts() // 刷新列表

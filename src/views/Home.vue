@@ -1,28 +1,5 @@
 <template>
-  <div class="common-layout">
     <el-container>
-
-      <el-header class="header">
-        <div class="logo">
-          <h2>🎮 游戏交流平台</h2>
-        </div>
-
-        <el-menu mode="horizontal" :ellipsis="false" class="nav-menu" default-active="1">
-          <el-menu-item index="1">游戏大厅</el-menu-item>
-          <el-menu-item index="/forum" @click="router.push('/forum')">💬 交流论坛</el-menu-item>
-        </el-menu>
-
-        <div class="user-profile" v-if="userInfo">
-          <span class="greeting">你好，{{ userInfo.nickname }}</span>
-          <el-tag :type="getRoleTagType(userInfo.role)" size="small" class="role-tag">
-            {{ getRoleName(userInfo.role) }}
-          </el-tag>
-          <el-button type="primary" plain size="small" @click="router.push('/dashboard')">
-            {{ userInfo?.role === 0 ? '👤 个人中心' : '⚙️ 前往后台' }}
-          </el-button>
-          <el-button type="danger" plain size="small" @click="handleLogout">退出登录</el-button>
-        </div>
-      </el-header>
 
       <el-main class="main-content">
         <div style="margin-bottom: 30px; display: flex; justify-content: center;">
@@ -76,7 +53,6 @@
       </el-main>
 
     </el-container>
-  </div>
 </template>
 
 <script setup>
@@ -137,11 +113,6 @@ const handlePageChange = (page) => {
 const handleSearch = () => {
   currentPage.value = 1 // 每次发起全新搜索，必须把页码重置回第1页！
   fetchGames()
-}
-// 退出登录
-const handleLogout = () => {
-  localStorage.removeItem('user')
-  router.push('/login')
 }
 
 // 辅助函数
