@@ -16,6 +16,13 @@ export const getCommentsByPostAPI = (postId) => {
     return request.get(`/comment/post/${postId}`)
 }
 
+// ==========================================
+// ⭐️ 新增：用户删除自己的评论
+// ==========================================
+export const deleteMyCommentAPI = (commentId) => {
+    return request.delete(`/comment/delete?id=${commentId}`)
+}
+
 // 👑 管理员获取全站评论 (分页+搜索)
 export const getAllCommentsForAdminAPI = (page, size, keyword = '') => {
     return request.get(`/comment/admin/all?page=${page}&size=${size}&keyword=${keyword}`)

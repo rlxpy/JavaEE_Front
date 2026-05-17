@@ -108,6 +108,17 @@ const routes = [
                 name: 'AdminForumManage',
                 component: () => import('../views/AdminForumManage.vue')
             },
+            {
+                path: 'messages',
+                name: 'Messages',
+                component: () => import('../views/Messages.vue')
+            },
+            {
+                path: 'admin-report',
+                name: 'AdminReport',
+                component: () => import('../views/AdminReportManage.vue'),
+                meta: { title: '举报处理中心' }
+            }
         ]
     },
 ]

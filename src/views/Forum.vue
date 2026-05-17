@@ -1,171 +1,182 @@
 <template>
   <div class="forum-page-root">
     <el-container class="forum-container">
-      <el-aside width="220px" class="left-sidebar">
+
+      <el-aside width="240px" class="left-sidebar">
         <div class="sidebar-header">
-          <span class="sidebar-title">🎮 游戏板块</span>
-          <el-button type="primary" link icon="Plus" @click="openSubscribeDialog">
-            添加关注
+          <span class="sidebar-title">探索频道</span>
+          <el-button type="primary" round plain size="small" class="add-focus-btn" @click="openSubscribeDialog">
+            <el-icon><Plus /></el-icon> 关注游戏
           </el-button>
         </div>
 
-        <el-menu :default-active="activeGameNav" @select="handleGameSelect" class="game-menu">
-          <el-menu-item index="all_games">
-            <el-icon><Menu /></el-icon>
+        <el-menu :default-active="activeGameNav" @select="handleGameSelect" class="game-menu" :router="false">
+          <el-menu-item index="all_games" class="menu-item-custom">
+            <el-icon><Monitor /></el-icon>
             <span>全站综合大厅</span>
           </el-menu-item>
-          <el-menu-item index="follow_feed">
-            <el-icon><Star /></el-icon>
+          <el-menu-item index="follow_feed" class="menu-item-custom">
+            <el-icon><Collection /></el-icon>
             <span>我的关注流</span>
           </el-menu-item>
 
-          <div class="menu-divider">已关注游戏</div>
+          <div class="menu-divider">我的游戏频道</div>
 
-          <el-menu-item v-for="game in mySubscribedGames" :key="game.id" :index="String(game.id)">
-            <span>{{ game.gameName }}</span>
+          <el-menu-item v-for="game in mySubscribedGames" :key="game.id" :index="String(game.id)" class="menu-item-custom">
+            <span class="game-truncate">{{ game.gameName }}</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
 
       <el-main class="right-main">
-        <el-card shadow="never" class="header-card">
-          <div class="header-content" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-            <el-input
-                v-model="searchKeyword"
-                placeholder="搜索感兴趣的标题或内容..."
-                clearable
-                @clear="handleSearch"
-                @keyup.enter="handleSearch"
-                style="width: 40%;"
-                size="large"
-                prefix-icon="Search"
-            >
-              <template #append>
-                <el-button @click="handleSearch">搜索</el-button>
-              </template>
-            </el-input>
-
-            <el-radio-group v-model="sortBy" @change="handleSearch" size="large">
-              <el-radio-button value="time">🕒 最新发布</el-radio-button>
-              <el-radio-button value="hot">🔥 热门精选</el-radio-button>
-            </el-radio-group>
-
-            <div>
-              <el-button type="primary" @click="openPostDialog">✍️ 我要发帖</el-button>
+        <div class="control-panel">
+          <div class="panel-top">
+            <div class="search-sort-group">
+              <el-input
+                  v-model="searchKeyword"
+                  placeholder="搜索感兴趣的帖子或内容..."
+                  clearable
+                  @clear="handleSearch"
+                  @keyup.enter="handleSearch"
+                  class="custom-search"
+                  prefix-icon="Search"
+              />
+              <el-radio-group v-model="sortBy" @change="handleSearch" class="custom-radio">
+                <el-radio-button value="time">最新发布</el-radio-button>
+                <el-radio-button value="hot">热门精选</el-radio-button>
+              </el-radio-group>
             </div>
+
+            <el-button type="primary" round class="shimmer-btn publish-btn" @click="openPostDialog">
+              <el-icon style="margin-right: 6px;"><EditPen /></el-icon> 发布新帖
+            </el-button>
           </div>
 
-          <el-tabs v-model="activeCategoryId" @tab-change="handleCategoryChange" class="category-tabs">
-            <el-tab-pane label="全部分区" name="all"></el-tab-pane>
-            <el-tab-pane v-for="cat in categoryList" :key="cat.id" :label="cat.name" :name="cat.id"></el-tab-pane>
-          </el-tabs>
-        </el-card>
+          <div class="panel-bottom">
+            <div class="category-pills">
+              <span class="pill" :class="{ active: activeCategoryId === 'all' }" @click="selectCategory('all')">全部分区</span>
+              <span
+                  class="pill"
+                  v-for="cat in categoryList"
+                  :key="cat.id"
+                  :class="{ active: activeCategoryId === cat.id }"
+                  @click="selectCategory(cat.id)"
+              >
+                {{ cat.name }}
+              </span>
+            </div>
+          </div>
+        </div>
 
         <div class="post-list" v-loading="loading">
           <el-empty v-if="postList.length === 0" description="暂无帖子，或者您还没有关注任何游戏哦！" />
 
-          <el-card v-for="post in postList" :key="post.id" class="post-card" shadow="hover" @click="router.push(`/forum/detail/${post.id}`)" style="cursor: pointer;">
+          <div
+              v-for="post in postList"
+              :key="post.id"
+              class="post-card"
+              @click="router.push(`/forum/detail/${post.id}`)"
+          >
             <div class="post-header">
               <div class="user-info">
-                <el-avatar :size="40" :src="post.avatar">{{ post.nickname?.charAt(0) || '匿' }}</el-avatar>
-                <span class="nickname">{{ post.nickname || '匿名玩家' }}</span>
-                <el-tag type="danger" effect="dark" size="small" round style="margin-left: 10px;">
-                  🔥 热度 {{ post.hotScore ? post.hotScore.toFixed(1) : '0.0' }}
-                </el-tag>
+                <el-avatar :size="42" :src="post.avatar" class="user-avatar">{{ post.nickname?.charAt(0) || '匿' }}</el-avatar>
+                <div class="user-meta">
+                  <span class="nickname">{{ post.nickname || '匿名玩家' }}</span>
+                  <span class="time">{{ new Date(post.createTime).toLocaleString() }}</span>
+                </div>
               </div>
-              <div class="meta-data">
-                <span class="time">{{ new Date(post.createTime).toLocaleString() }}</span>
+              <div class="header-right">
+                <el-tag v-if="post.hotScore > 0" type="danger" effect="light" round class="hot-tag">
+                  <el-icon><TrendCharts /></el-icon> {{ post.hotScore.toFixed(1) }}
+                </el-tag>
               </div>
             </div>
 
             <h3 class="post-title">{{ post.title }}</h3>
-
             <p class="post-content">{{ post.content ? post.content.replace(/<[^>]+>/g, '') : '' }}</p>
 
-            <div class="post-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 12px; border-top: 1px solid #f4f4f5;">
+            <div class="post-footer">
               <div class="game-tag-box">
-                <el-tag v-if="getGameName(post.gameId)" type="info" size="small" effect="plain" round>
-                  🎮 {{ getGameName(post.gameId) }}
+                <el-tag v-if="getGameName(post.gameId)" type="info" effect="plain" round class="game-tag">
+                  {{ getGameName(post.gameId) }}
                 </el-tag>
               </div>
 
-              <div class="stats" style="color: #909399; font-size: 13px; display: flex; gap: 15px;">
-                <span>👁️ {{ post.viewCount || 0 }}</span>
-                <span>👍 {{ post.likeCount || 0 }}</span>
-                <span>💬 {{ post.commentCount || 0 }}</span>
+              <div class="stats-group">
+                <span class="stat-item"><el-icon><View /></el-icon> {{ post.viewCount || 0 }}</span>
+                <span class="stat-item"><el-icon><Pointer /></el-icon> {{ post.likeCount || 0 }}</span>
+                <span class="stat-item"><el-icon><ChatLineRound /></el-icon> {{ post.commentCount || 0 }}</span>
               </div>
             </div>
-          </el-card>
+          </div>
         </div>
 
-        <div class="pagination-box">
-          <el-pagination background layout="total, prev, pager, next" :total="total" :page-size="pageSize" v-model:current-page="currentPage" @current-change="handlePageChange" />
+        <div class="pagination-box" v-if="total > 0">
+          <el-pagination
+              background
+              layout="total, prev, pager, next"
+              :total="total"
+              :page-size="pageSize"
+              v-model:current-page="currentPage"
+              @current-change="handlePageChange"
+          />
         </div>
       </el-main>
     </el-container>
 
-    <el-dialog v-model="showDialog" title="🚀 发布新帖子" width="50%">
-      <el-form :model="postForm" label-width="80px">
+    <el-dialog v-model="showDialog" title="发布新帖子" width="55%" class="custom-dialog">
+      <el-form :model="postForm" label-width="80px" label-position="top">
         <el-form-item label="帖子标题" required>
-          <el-input v-model="postForm.title" placeholder="起一个吸引人的标题吧..." />
+          <el-input v-model="postForm.title" placeholder="起一个吸引人的标题吧..." size="large" />
         </el-form-item>
-        <el-form-item label="所属分区" required>
-          <el-select v-model="postForm.categoryId" placeholder="请选择帖子类型">
-            <el-option v-for="cat in categoryList" :key="cat.id" :label="cat.name" :value="cat.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="关联游戏">
-          <el-select v-model="postForm.gameId" placeholder="支持打字搜索游戏..." clearable filterable style="width: 100%;">
-            <el-option label="📢 综合讨论 (全站)" :value="''" />
-            <el-option v-for="game in gameList" :key="game.id" :label="game.gameName" :value="game.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="帖子内容" required>
-          <el-form-item label="正文内容" required>
-            <div style="border: 1px solid #ccc; width: 100%; border-radius: 8px; overflow: hidden; z-index: 100;">
-              <Toolbar
-                  style="border-bottom: 1px solid #ccc"
-                  :editor="editorRef"
-                  :defaultConfig="{}"
-                  :mode="mode"
-              />
-              <Editor
-                  style="height: 300px; overflow-y: hidden;"
-                  v-model="postForm.content"
-                  :defaultConfig="editorConfig"
-                  :mode="mode"
-                  @onCreated="handleCreated"
-              />
-            </div>
-          </el-form-item>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="所属分区" required>
+              <el-select v-model="postForm.categoryId" placeholder="请选择帖子类型" size="large" style="width: 100%;">
+                <el-option v-for="cat in categoryList" :key="cat.id" :label="cat.name" :value="cat.id" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="关联游戏">
+              <el-select v-model="postForm.gameId" placeholder="支持打字搜索游戏..." clearable filterable size="large" style="width: 100%;">
+                <el-option label="综合讨论 (全站)" :value="''" />
+                <el-option v-for="game in gameList" :key="game.id" :label="game.gameName" :value="game.id" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-form-item label="正文内容" required>
+          <div class="editor-wrapper">
+            <Toolbar style="border-bottom: 1px solid #edf2f7" :editor="editorRef" :defaultConfig="{}" :mode="mode" />
+            <Editor style="height: 350px; overflow-y: hidden;" v-model="postForm.content" :defaultConfig="editorConfig" :mode="mode" @onCreated="handleCreated" />
+          </div>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="showDialog = false">取 消</el-button>
-        <el-button type="primary" @click="submitPost">立刻发布</el-button>
+        <el-button round @click="showDialog = false">取消</el-button>
+        <el-button type="primary" round class="shimmer-btn" @click="submitPost" style="padding: 0 30px;">立刻发布</el-button>
       </template>
     </el-dialog>
 
-    <el-dialog v-model="showSubscribeDialog" title="🎮 管理我的游戏频道" width="600px">
+    <el-dialog v-model="showSubscribeDialog" title="管理我的游戏频道" width="500px" class="custom-dialog">
       <div style="margin-bottom: 20px;">
-        <el-input v-model="gameSearchKeyword" placeholder="输入游戏名称快速检索..." :prefix-icon="Search" clearable size="large" />
+        <el-input v-model="gameSearchKeyword" placeholder="输入游戏名称快速检索..." :prefix-icon="Search" clearable size="large" class="custom-search" />
       </div>
       <div v-if="gameList.length === 0" v-loading="true" style="height: 100px;"></div>
       <el-scrollbar height="350px" v-else>
-        <el-row :gutter="20" v-if="filteredGameList.length > 0">
-          <el-col :span="12" v-for="game in filteredGameList" :key="game.id" style="margin-bottom: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid #ebeef5; border-radius: 8px;">
-              <span style="font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px;" :title="game.gameName">
-                {{ game.gameName }}
-              </span>
-              <el-button :type="isSubscribed(game.id) ? 'info' : 'primary'" :plain="!isSubscribed(game.id)" size="small" round @click="handleToggleSubscribe(game.id)">
-                {{ isSubscribed(game.id) ? '已关注' : '+ 关注' }}
-              </el-button>
-            </div>
-          </el-col>
-        </el-row>
-        <el-empty v-else description="没有找到该游戏，请检查拼写哦~" :image-size="80" />
-        <div v-if="!gameSearchKeyword && gameList.length > 10" style="text-align: center; color: #909399; margin-top: 10px; font-size: 13px;">
+        <div class="subscribe-list" v-if="filteredGameList.length > 0">
+          <div class="subscribe-item" v-for="game in filteredGameList" :key="game.id">
+            <span class="game-name" :title="game.gameName">{{ game.gameName }}</span>
+            <el-button :type="isSubscribed(game.id) ? 'info' : 'primary'" :plain="!isSubscribed(game.id)" size="small" round @click="handleToggleSubscribe(game.id)">
+              {{ isSubscribed(game.id) ? '已关注' : '+ 关注' }}
+            </el-button>
+          </div>
+        </div>
+        <el-empty v-else description="没有找到该游戏，请检查拼写" :image-size="80" />
+        <div v-if="!gameSearchKeyword && gameList.length > 10" class="scroll-tip">
           仅展示部分热门游戏，请使用上方搜索框查找更多...
         </div>
       </el-scrollbar>
@@ -180,7 +191,8 @@ import { shallowRef, onBeforeUnmount } from 'vue'
 import request from '../utils/request'
 import { ref, reactive, onMounted, computed, watch, nextTick } from 'vue'
 import { useRouter, onBeforeRouteLeave } from 'vue-router'
-import { Menu, Star, Plus, Pointer, HotWater, Search } from '@element-plus/icons-vue'
+// ⭐️ 引入高级图标
+import { Monitor, Collection, Plus, Search, View, Pointer, ChatLineRound, EditPen, TrendCharts } from '@element-plus/icons-vue'
 import { getPostsByPageAPI, addPostAPI } from '../api/post.js'
 import { getGameListAPI } from '../api/game.js'
 import { getCategoryListAPI } from '../api/category.js'
@@ -312,9 +324,16 @@ const fetchPosts = async () => {
 }
 
 const handleGameSelect = (index) => { activeGameNav.value = index; currentPage.value = 1; fetchPosts() }
-const handleCategoryChange = () => { currentPage.value = 1; fetchPosts() }
+
+// 替换原来的 el-tabs 点击事件
+const selectCategory = (id) => {
+  activeCategoryId.value = id
+  currentPage.value = 1
+  fetchPosts()
+}
+
 const handleSearch = () => { currentPage.value = 1; fetchPosts() }
-const handlePageChange = (page) => { currentPage.value = page; fetchPosts() }
+const handlePageChange = (page) => { currentPage.value = page; fetchPosts(); window.scrollTo({top: 0, behavior: 'smooth'}) }
 
 const openPostDialog = () => {
   if (!user) return ElMessage.warning('请先登录哦！')
@@ -348,81 +367,184 @@ const getGameName = (gameId) => {
   return game ? game.gameName : null
 }
 
-// 富文本编辑器实例
 const editorRef = shallowRef()
 const mode = 'default'
-// 编辑器配置：接管上传图片
 const editorConfig = {
   placeholder: '分享你的异世界见闻，支持直接粘贴图片或点击上传...',
   MENU_CONF: {
     uploadImage: {
-      // ⭐️ 核心魔法：使用自定义上传，对接你的 FileController
       async customUpload(file, insertFn) {
         const formData = new FormData()
         formData.append('file', file)
         try {
-          // 发送到你的后端接口
-          const res = await request.post('/file/upload', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-          })
-          if (res.code === 200) {
-            insertFn(res.data) // 成功后，将图片 URL 插入到富文本编辑器中！
-          } else {
-            ElMessage.error(res.msg || '上传图片失败')
-          }
-        } catch (e) {
-          ElMessage.error('上传异常')
-        }
+          const res = await request.post('/file/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+          if (res.code === 200) insertFn(res.data)
+          else ElMessage.error(res.msg || '上传图片失败')
+        } catch (e) { ElMessage.error('上传异常') }
       }
     }
   }
 }
-// 组件销毁时，也及时销毁编辑器
 onBeforeUnmount(() => {
   const editor = editorRef.value
   if (editor == null) return
   editor.destroy()
 })
-const handleCreated = (editor) => {
-  editorRef.value = editor
-}
+const handleCreated = (editor) => { editorRef.value = editor }
 </script>
 
 <style scoped>
-/* 增加一个基础内边距，确保在 MainLayout 里面不会顶着边缘 */
 .forum-page-root {
-  padding: 20px;
+  padding: 30px 20px;
+  background-color: transparent;
 }
 .forum-container {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
   display: flex;
-  gap: 20px;
+  gap: 24px;
 }
+
+/* ================= 1. 左侧高级侧边栏 ================= */
 .left-sidebar {
   background-color: #fff;
-  border-radius: 10px;
-  border: 1px solid #ebeef5;
-  padding: 10px 0;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+  padding: 20px 10px;
   height: fit-content;
+  position: sticky;
+  top: 84px; /* 跟随滚动悬浮 */
 }
 .sidebar-header {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 20px; border-bottom: 1px solid #ebeef5; margin-bottom: 10px;
+  padding: 0 15px 15px; margin-bottom: 10px;
 }
-.sidebar-title { font-weight: bold; font-size: 16px; color: #303133; }
-.game-menu { border-right: none; }
-.menu-divider { padding: 15px 20px 5px; font-size: 12px; color: #909399; }
-.right-main { padding: 0; flex: 1; overflow: hidden; }
-.header-card { margin-bottom: 20px; border-radius: 10px; }
-.header-content { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.post-list { min-height: 300px; }
-.post-card { margin-bottom: 15px; border-radius: 8px; }
-.post-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ebeef5; padding-bottom: 10px; margin-bottom: 10px; }
-.user-info { display: flex; align-items: center; gap: 10px; }
-.nickname { font-weight: bold; color: #409eff; }
-.time { font-size: 13px; color: #909399; }
-.post-title { margin: 10px 0; font-size: 18px; color: #303133; }
-.post-content { color: #606266; line-height: 1.6; white-space: pre-wrap; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+.sidebar-title { font-weight: 800; font-size: 16px; color: #2c3e50; }
+.add-focus-btn { font-weight: bold; }
+
+.game-menu { border-right: none; background: transparent; }
+.menu-item-custom {
+  border-radius: 10px;
+  margin: 4px 10px;
+  height: 44px; line-height: 44px;
+  color: #5c6b77;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+.menu-item-custom:hover {
+  background-color: #f4f6fc;
+  color: #409eff;
+}
+.game-menu .el-menu-item.is-active {
+  background-color: #f4f6fc;
+  color: #409eff;
+  font-weight: bold;
+}
+.menu-divider { padding: 20px 15px 8px; font-size: 12px; color: #a0aec0; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+.game-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+
+/* ================= 2. 顶部控制中心 ================= */
+.right-main { padding: 0; flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 20px; }
+
+.control-panel {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+}
+.panel-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+.search-sort-group { display: flex; gap: 15px; align-items: center; flex: 1; }
+.custom-radio {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+:deep(.custom-radio .el-radio-button__inner) {
+  border: none !important;
+  background: #f4f6fc;
+  color: #5c6b77;
+  box-shadow: none !important;
+  font-weight: 600;
+}
+:deep(.custom-radio .el-radio-button:first-child .el-radio-button__inner) {
+  border-radius: 20px 0 0 20px;
+}
+:deep(.custom-radio .el-radio-button:last-child .el-radio-button__inner) {
+  border-radius: 0 20px 20px 0;
+}
+:deep(.custom-radio .el-radio-button.is-active .el-radio-button__inner) {
+  background: #409eff;
+  color: white;
+}
+
+.publish-btn { font-size: 15px; padding: 0 25px; height: 40px; }
+
+.category-pills { display: flex; gap: 12px; flex-wrap: wrap; }
+.pill {
+  padding: 8px 18px; border-radius: 20px; background-color: #f4f6fc; color: #5c6b77;
+  font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;
+}
+.pill:hover { color: #409eff; background-color: #eef2ff; }
+.pill.active { background-color: #409eff; color: white; box-shadow: 0 4px 12px rgba(64,158,255,0.3); }
+
+/* ================= 3. 帖子流列表 ================= */
+.post-list { min-height: 300px; display: flex; flex-direction: column; gap: 16px; }
+.post-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.02);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+.post-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  border-color: #f0f2f5;
+}
+
+.post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.user-info { display: flex; align-items: center; gap: 12px; }
+.user-avatar { border: 2px solid #f4f6fc; }
+.user-meta { display: flex; flex-direction: column; }
+.nickname { font-weight: bold; color: #2c3e50; font-size: 15px; }
+.time { font-size: 12px; color: #a0aec0; margin-top: 2px; }
+.hot-tag { font-weight: bold; border: none; background: #fff0f0; }
+
+.post-title { margin: 0 0 10px 0; font-size: 18px; color: #2c3e50; font-weight: 800; }
+.post-content { color: #5c6b77; line-height: 1.6; font-size: 14px; margin: 0 0 16px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.post-footer { display: flex; justify-content: space-between; align-items: center; }
+.game-tag { font-weight: 600; border: none; background: #f4f6fc; color: #5c6b77; }
+.stats-group { display: flex; gap: 20px; color: #a0aec0; font-size: 14px; font-weight: 500; }
+.stat-item { display: flex; align-items: center; gap: 4px; transition: color 0.3s; }
+.post-card:hover .stat-item { color: #5c6b77; } /* 鼠标悬浮卡片时，数据颜色变深一点 */
+
 .pagination-box { margin-top: 20px; display: flex; justify-content: center; }
+
+/* ================= 其他复用特效 ================= */
+.shimmer-btn { position: relative; overflow: hidden; border: none; background: linear-gradient(90deg, #409eff 0%, #7367f0 100%); }
+.shimmer-btn::after {
+  content: ''; position: absolute; top: -50%; left: -60%; width: 20%; height: 200%;
+  background: rgba(255,255,255,0.4); transform: rotate(30deg); transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.shimmer-btn:hover::after { left: 120%; }
+
+/* 弹窗及内部表单微调 */
+.editor-wrapper { border: 1px solid #edf2f7; border-radius: 12px; overflow: hidden; transition: border 0.3s; }
+.editor-wrapper:hover { border-color: #c0c4cc; }
+.subscribe-list { display: flex; flex-direction: column; gap: 10px; padding-right: 10px; }
+.subscribe-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f8fafc; border-radius: 12px; transition: background 0.3s; }
+.subscribe-item:hover { background: #f1f5f9; }
+.scroll-tip { text-align: center; color: #a0aec0; margin-top: 15px; font-size: 13px; }
 </style>

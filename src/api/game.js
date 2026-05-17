@@ -18,8 +18,11 @@ export const addGameAPI = (data) => {
 }
 
 // 分页获取游戏列表 (带搜索)
-export const getGamesByPageAPI = (page, size, keyword = '') => {
-    return request.get(`/game/page?page=${page}&size=${size}&keyword=${keyword}`)
+export const getGamesByPageAPI = (page, size, keyword = '', categoryId = 0, sortBy = 'latest') => {
+    let url = `/game/page?page=${page}&size=${size}&sortBy=${sortBy}`
+    if (keyword) url += `&keyword=${encodeURIComponent(keyword)}`
+    if (categoryId) url += `&categoryId=${categoryId}`
+    return request.get(url)
 }
 
 // 获取特定状态的游戏列表（传 0 获取待审核列表）
@@ -57,4 +60,8 @@ export const getAllGamesForAdminAPI = (page, size, keyword = '') => {
 // 👑 管理员强制下架任意游戏
 export const deleteGameByAdminAPI = (id) => {
     return request.delete(`/game/admin/delete?id=${id}`)
+}
+
+export const getCategoryListAPI = () => {
+    return request.get('/gameCategory/list') // （注意和你后端的实际地址对齐，如果是 /gameCategory/list 就在 api 文件里改一下）
 }
