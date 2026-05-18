@@ -1,36 +1,46 @@
-//1. 引入我们刚才封装好的“智能对讲机”，而不是直接引原始的 axios
+// 引入封装好的“智能对讲机”
 import request from '@/utils/request'
 
-// 2. 封装登录接口并导出
+// 1. 用户登录接口
 export const loginAPI = (data) => {
-    // 这会向 http://localhost:8080/user/login 发送 POST 请求，并带上账号密码数据
     return request.post('/user/login', data)
 }
 
-// 用户注册接口
-export const registerAPI = (data) => {
-    return request.post('/user/register', data)
+// 2. ⭐️ 升级版用户注册接口：将邮箱验证码 emailCode 作为 Query 参数动态拼接
+export const registerAPI = (data, emailCode) => {
+    return request.post(`/user/register?emailCode=${emailCode}`, data)
 }
 
-// 更新用户基本信息
+// 3. ⭐️ 新增：向后端发起发送邮箱验证码的 POST 请求
+export const sendEmailCodeAPI = (email, type) => {
+    return request.post(`/email/sendCode?email=${email}&type=${type}`)
+}
+
+// 4. ⭐️ 新增：忘记密码 - 重置密码接口
+export const resetPasswordAPI = (email, code, newPassword) => {
+    return request.post(`/user/resetPassword?email=${email}&code=${code}&newPassword=${newPassword}`)
+}
+
+export const changePasswordAPI = (id, oldPassword, newPassword) => {
+    return request.post(`/user/changePassword?id=${id}&oldPassword=${oldPassword}&newPassword=${newPassword}`)
+}
+
+// 5. 更新用户基本信息
 export const updateUserInfoAPI = (data) => {
     return request.post('/user/update', data)
 }
 
-// 获取所有用户列表 (超级管理员专属)
+// 6. 获取所有用户列表 (超级管理员专享)
 export const getAllUsersAPI = () => {
-    // 对应你后端的 @GetMapping("/getAll")
     return request.get('/user/getAll')
 }
 
-// 获取分页和条件搜索的用户列表 (大厂级接口)
+// 7. 获取分页和条件搜索的用户列表
 export const getUsersByPageAPI = (params) => {
-    // axios 的 get 请求，第二个参数使用 { params: ... } 可以自动把参数拼接到 URL 后面
-    // 相当于 http://localhost:8080/user/page?page=1&size=10&keyword=xxx
     return request.get('/user/page', { params: params })
 }
 
-// 获取图形验证码
+// 8. 获取图形验证码 (仅用于登录防爆破)
 export const getCaptchaAPI = () => {
     return request.get('/api/captcha')
 }
